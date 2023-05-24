@@ -66,14 +66,27 @@ public class JetMovementAgent : Agent
         float distToGoal = Vector3.Distance(transform.position, goalPosition);
         if (transform.position.y < 5){
             Debug.Log("Hit the Ground :(");
-            SetReward(-100f);
+            SetReward(-6000f);
             EndEpisode();
         } else if (distToGoal < 2) {
             Debug.Log("Reached Goal!");
-            SetReward(100f);
+            SetReward(1000f);
             EndEpisode();
-        }else {
-            float reward = -0.1f * Vector3.Distance(transform.position, goalPosition);
+        } else if (transform.rotation.y > 150) {
+            Debug.Log("Too much rotation :(");
+            SetReward(-4000f);
+            EndEpisode();
+        } else {
+            float distance_reward = -10f * Vector3.Distance(transform.position, goalPosition);
+            float velocity_bonus;
+            if ((fighterjetRB.velocity.x > 80 || fighterjetRB.velocity.z > 80) && (fighterjetRB.velocity.y < 10) && (fighterjetRB.velocity.y >= 0)) {
+                velocity_bonus = 200f;
+            } else if ((fighterjetRB.velocity.y > 100) || ((fighterjetRB.velocity.y < -10) && (transform.position.y < 30))) {
+                velocity_bonus = -500f;
+            } else {
+                velocity_bonus = 0f
+            }
+            float reward = distance_reward + velocity_bonus;
             SetReward(reward);
         }
     }
