@@ -66,7 +66,7 @@ public class JetMovementAgent : Agent
         float distToGoal = Vector3.Distance(transform.position, goalPosition);
         if (transform.position.y < 5){
             Debug.Log("Hit the Ground :(");
-            SetReward(-10000f);
+            SetReward(-50000f);
             EndEpisode();
         } else {
             float reward = -2f * distToGoal * distToGoal;
