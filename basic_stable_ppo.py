@@ -27,7 +27,7 @@ if __name__ == "__main__":
     env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
 
     model = PPO("MlpPolicy", env, verbose=1)
-    model.learn(total_timesteps=10)
+    model.learn(total_timesteps=10000)
 
     #evaluate agent
     episodes = 100
