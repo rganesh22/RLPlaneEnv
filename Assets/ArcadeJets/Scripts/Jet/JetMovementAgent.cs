@@ -66,30 +66,53 @@ public class JetMovementAgent : Agent
         float distToGoal = Vector3.Distance(transform.position, goalPosition);
         if (transform.position.y < 5){
             Debug.Log("Hit the Ground :(");
-            SetReward(-6000f);
-            EndEpisode();
-        } else if (distToGoal < 2) {
-            Debug.Log("Reached Goal!");
-            SetReward(1000f);
-            EndEpisode();
-        } else if (transform.rotation.y > 150) {
-            Debug.Log("Too much rotation :(");
-            SetReward(-4000f);
+            SetReward(-500000f);
             EndEpisode();
         } else {
-            float distance_reward = -10f * Vector3.Distance(transform.position, goalPosition);
-            float velocity_bonus;
-            if ((fighterjetRB.velocity.x > 80 || fighterjetRB.velocity.z > 80) && (fighterjetRB.velocity.y < 10) && (fighterjetRB.velocity.y >= 0)) {
-                velocity_bonus = 200f;
-            } else if ((fighterjetRB.velocity.y > 100) || ((fighterjetRB.velocity.y < -10) && (transform.position.y < 30))) {
-                velocity_bonus = -500f;
-            } else {
-                velocity_bonus = 0f
-            }
-            float reward = distance_reward + velocity_bonus;
+            float reward = -2f * distToGoal * distToGoal;
             SetReward(reward);
         }
     }
+    
+    // public override void OnActionReceived(ActionBuffers actionBuffers)
+    // {
+    //     float throttleTarget = Mathf.Clamp(actionBuffers.ContinuousActions[0], 0f, 1f);
+    //     float stickInputX = Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
+    //     float stickInputY = Mathf.Clamp(actionBuffers.ContinuousActions[2], -1f, 1f);
+    //     float stickInputZ = Mathf.Clamp(actionBuffers.ContinuousActions[3], -1f, 1f);
+
+    //     GetComponent<StickInput>().Pitch = stickInputX;
+    //     GetComponent<StickInput>().Roll =  stickInputY;
+    //     GetComponent<StickInput>().Yaw =  stickInputZ;
+    //     GetComponent<StickInput>().Throttle = throttleTarget;
+
+    //     float distToGoal = Vector3.Distance(transform.position, goalPosition);
+    //     if (transform.position.y < 5){
+    //         Debug.Log("Hit the Ground :(");
+    //         SetReward(-6000f);
+    //         EndEpisode();
+    //     } else if (distToGoal < 2) {
+    //         Debug.Log("Reached Goal!");
+    //         SetReward(1000f);
+    //         EndEpisode();
+    //     } else if (transform.rotation.y > 150) {
+    //         Debug.Log("Too much rotation :(");
+    //         SetReward(-4000f);
+    //         EndEpisode();
+    //     } else {
+    //         float distance_reward = -10f * Vector3.Distance(transform.position, goalPosition);
+    //         float velocity_bonus;
+    //         if ((fighterjetRB.velocity.x > 80 || fighterjetRB.velocity.z > 80) && (fighterjetRB.velocity.y < 10) && (fighterjetRB.velocity.y >= 0)) {
+    //             velocity_bonus = 200f;
+    //         } else if ((fighterjetRB.velocity.y > 100) || ((fighterjetRB.velocity.y < -10) && (transform.position.y < 30))) {
+    //             velocity_bonus = -500f;
+    //         } else {
+    //             velocity_bonus = 0f
+    //         }
+    //         float reward = distance_reward + velocity_bonus;
+    //         SetReward(reward);
+    //     }
+    // }
 
     public override void OnEpisodeBegin()
     {

@@ -15,7 +15,8 @@ if __name__ == "__main__":
     # env_path = "/Users/anwesha/Documents/Stanford/cs-stanford/cs224r/RLPlaneEnv"
     # env = UnityEnv(env_path, worker_id=2, use_visual=True)
 
-    unity_env = UnityEnvironment("Build/ArcadePlaneBuild", no_graphics=True)
+    unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", no_graphics=True)
+    # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample")
     env = UnityToGymWrapper(unity_env, uint8_visual=False) 
 
     # Create log dir
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
 
     model = PPO("MlpPolicy", env, verbose=1)
-    model.learn(total_timesteps=10)
+    model.learn(total_timesteps=10000)
 
     #evaluate agent
     episodes = 100
@@ -40,9 +41,9 @@ if __name__ == "__main__":
         while True:
             action, _states = model.predict(obs)
             obs, reward, done, info = env.step(action)
-            if e < 20:
-                print(f'Observation: {obs} \n')
-                print(f'Action: {action} \n\n')
+            # if e < 20:
+            #     print(f'Observation: {obs} \n')
+            #     print(f'Action: {action} \n\n')
             total_l += 1.
             total_r += reward
             if done:
