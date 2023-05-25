@@ -69,7 +69,7 @@ public class JetMovementAgent : Agent
             SetReward(-500000f);
             EndEpisode();
         } else {
-            float reward = -2f * distToGoal * distToGoal;
+            float reward = -0.000001f * distToGoal * distToGoal;
             SetReward(reward);
         }
     }

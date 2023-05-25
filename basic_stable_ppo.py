@@ -21,13 +21,13 @@ if __name__ == "__main__":
 
     # Create log dir
     time_int = int(time.time())
-    log_dir = "stable_results/ppo/".format(time_int)
+    log_dir = "stable_results/ppo/{}".format(time_int)
     os.makedirs(log_dir, exist_ok=True)
     env = Monitor(env, log_dir, allow_early_resets=True)
 
     env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
 
-    model = PPO("MlpPolicy", env, verbose=1)
+    model = PPO("MlpPolicy", env, verbose=1, tensorboard_log=log_dir)
     model.learn(total_timesteps=10000)
 
     #evaluate agent
