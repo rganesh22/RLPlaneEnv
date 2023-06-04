@@ -8,7 +8,7 @@ from stable_baselines3.common.vec_env import VecVideoRecorder, DummyVecEnv
 from stable_baselines3 import PPO, DDPG, DQN
 from stable_baselines3.common.monitor import Monitor
 import os
-# import time
+import time
 import pickle
 from pathlib import Path
 
@@ -17,9 +17,7 @@ if __name__ == "__main__":
     # env_path = "/Users/anwesha/Documents/Stanford/cs-stanford/cs224r/RLPlaneEnv"
     # env = UnityEnv(env_path, worker_id=2, use_visual=True)
 
-    unity_env = UnityEnvironment("Build/ArcadeJetFlight", no_graphics=True)
-    # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", worker_id=2)
-    env = UnityToGymWrapper(unity_env, uint8_visual=False) 
+    
 
     # Create log dir
     # time_int = int(time.time())
@@ -33,6 +31,9 @@ if __name__ == "__main__":
         for gamma in [0.99, 0.95]:
             gamma_str = f"point{gamma * 100}"
             for batch_size in [64, 32]:
+                unity_env = UnityEnvironment("Build/ArcadeJetFlight", no_graphics=True, worker_id=2)
+                # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", worker_id=2)
+                env = UnityToGymWrapper(unity_env, uint8_visual=False) 
                 log_dir = f"stable_results/ppo/anwesharuns/{reward_func}/lr{lr_str}_gamma{gamma_str}_batch{batch_size}/"
                 os.makedirs(log_dir, exist_ok=True)
                 env = Monitor(env, log_dir, allow_early_resets=True)
@@ -40,6 +41,9 @@ if __name__ == "__main__":
                 model = PPO("MlpPolicy", env, n_steps=512, learning_rate=lr, gamma=gamma, batch_size=batch_size, verbose=1, tensorboard_log=log_dir)
                 model.learn(total_timesteps=50000)
                 model.save(log_dir+"/model")
+                env.close()
+                time.sleep(60) # give ports time to clear up
+
                 eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlight", no_graphics=False)
                 eval_env = UnityToGymWrapper(eval_unity_env, uint8_visual=False) 
                 episodes = 100
@@ -83,6 +87,8 @@ if __name__ == "__main__":
                     img = model.env.render(mode='rgb_array')
 
                 imageio.mimsave(log_dir+'/sample.gif', [np.array(img) for i, img in enumerate(images) if i%2 == 0], fps=29)
+                eval_env.close()
+                time.sleep(60)
 
     # model = PPO.load('just_fly')
     # model.set_env(env)
