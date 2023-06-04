@@ -71,37 +71,37 @@ public class JetMovementAgent : Agent
 
 
         // Working Reward Function
-        if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
-            Debug.Log("Took too long :(");
-            // AddReward(-30000f);
-            EndEpisode();
-        } else if (transform.position.y < 10){
-            Debug.Log("Hit the Ground :(");
-            AddReward(-50000f);
-            EndEpisode();
-        } else {
-            // speed + not hitting ground
-            float reward = 0;
-            reward += 0.2f * fighterjetRB.velocity.magnitude;
-            reward -= 0.3f * distToGoal;
-            AddReward(reward);
-        }
-
-        // if ((Time.realtimeSinceStartup - episode_start_time) > 5f){
+        // if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
         //     Debug.Log("Took too long :(");
-        //     AddReward(-30000f);
+        //     // AddReward(-30000f);
         //     EndEpisode();
-        // } else if (distToGoal < 10) {
-        //     Debug.Log("Reached Goal!");
-        //     AddReward(100000f);
+        // } else if (transform.position.y < 10){
+        //     Debug.Log("Hit the Ground :(");
+        //     AddReward(-50000f);
         //     EndEpisode();
         // } else {
         //     // speed + not hitting ground
         //     float reward = 0;
-        //     // reward += 0.2f * fighterjetRB.velocity.magnitude;
+        //     reward += 0.2f * fighterjetRB.velocity.magnitude;
         //     reward -= 0.3f * distToGoal;
         //     AddReward(reward);
         // }
+
+        if ((Time.realtimeSinceStartup - episode_start_time) > 5f){
+            Debug.Log("Took too long :(");
+            AddReward(-30000f);
+            EndEpisode();
+        } else if (distToGoal < 10) {
+            Debug.Log("Reached Goal!");
+            AddReward(100000f);
+            EndEpisode();
+        } else {
+            // speed + not hitting ground
+            float reward = 0;
+            // reward += 0.2f * fighterjetRB.velocity.magnitude;
+            reward -= 0.3f * distToGoal;
+            AddReward(reward);
+        }
 
         // float distToGoal = Vector3.Distance(transform.position, goalPosition);
         // if ((Time.realtimeSinceStartup - episode_start_time) > 5f){
@@ -188,6 +188,6 @@ public class JetMovementAgent : Agent
         //     Time.timeScale = 10f;
         // }
 
-        Time.timeScale = 1f;
+        Time.timeScale = 100f;
     }
 }
