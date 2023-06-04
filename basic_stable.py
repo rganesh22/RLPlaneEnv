@@ -23,15 +23,21 @@ if __name__ == "__main__":
     time_int = int(time.time())
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
-    reward_func = "only_time_and_distance"
-    log_dir = f"stable_results/ppo/{reward_func}/{time_int}"
+    reward_func = "just_fly_plus_target"
+    # log_dir = f"stable_results/ppo/{reward_func}/{time_int}"
+    log_dir = f"stable_results/ppo/raghavruns/{reward_func}/"
     os.makedirs(log_dir, exist_ok=True)
     env = Monitor(env, log_dir, allow_early_resets=True)
 
     env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
 
-    # model = PPO("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
-    model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, verbose=1, tensorboard_log=log_dir)
+    # model = PPO.load('just_fly')
+    # model.set_env(env)
+    
+    model = PPO("MlpPolicy", env, n_steps=2048, verbose=1, tensorboard_log=log_dir)
+    
+    # model = PPO("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)    
+    # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, verbose=1, tensorboard_log=log_dir)
     # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, gamma=0.95, verbose=1, tensorboard_log=log_dir)
     # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, gamma=0.95, clip_range=0.5, verbose=1, tensorboard_log=log_dir)
     # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, batch_size=32, verbose=1, tensorboard_log=log_dir)
@@ -50,10 +56,14 @@ if __name__ == "__main__":
 
     # model = DQN("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
     # model = DQN("CnnPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
-    model.learn(total_timesteps=100000)
+    
+    # model.learn(total_timesteps=100000)
+    model.learn(total_timesteps=10000)
+    
+    model.save(log_dir+"/model")
+    model.save("latest_model")
 
     #evaluate agent
-
     eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlightExample")
     eval_env = UnityToGymWrapper(eval_unity_env, uint8_visual=False) 
 
@@ -82,5 +92,5 @@ if __name__ == "__main__":
         pickle.dump(ep_l, f)
 
     eval_env.close()
-    model.save(log_dir+"/model")
-    model.save("latest_model")
+    # model.save(log_dir+"/model")
+    # model.save("latest_model")

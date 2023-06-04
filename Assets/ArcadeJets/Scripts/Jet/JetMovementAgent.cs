@@ -30,6 +30,15 @@ public class JetMovementAgent : Agent
         initRot = gameObject.transform.rotation;
 
         SetResetParameters();
+
+        // bool isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
+        // if (isInference) {
+        //     Time.timeScale = 1f;
+        // } else {
+        //     Time.timeScale = 10f;
+        // }
+
+        Time.timeScale = 100f;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -86,22 +95,38 @@ public class JetMovementAgent : Agent
         //     reward -= 0.3f * distToGoal;
         //     AddReward(reward);
         // }
+        
 
-        if ((Time.realtimeSinceStartup - episode_start_time) > 5f){
+        if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
             Debug.Log("Took too long :(");
-            AddReward(-30000f);
+            // AddReward(-30000f);
             EndEpisode();
-        } else if (distToGoal < 10) {
+        } else if (distToGoal < 100) {
             Debug.Log("Reached Goal!");
-            AddReward(100000f);
+            AddReward(5000);
             EndEpisode();
+        } else if (transform.position.y < 10){
+            Debug.Log("Hit the Ground :(");
+            AddReward(-500f);
+            // EndEpisode();
         } else {
             // speed + not hitting ground
             float reward = 0;
-            // reward += 0.2f * fighterjetRB.velocity.magnitude;
-            reward -= 0.3f * distToGoal;
+            // reward += 1f * fighterjetRB.velocity.magnitude;
+            // reward -= 1f * distToGoal;
+            reward -= 1;
             AddReward(reward);
         }
+
+        // Debug.Log((goalPosition - transform.position).x);
+        // Debug.Log((goalPosition - transform.position).y);
+        // Debug.Log((goalPosition - transform.position).z);        
+
+        // if (Mathf.Abs(transform.rotation.x) > 0.5 || Mathf.Abs(transform.rotation.y) > 0.5 || Mathf.Abs(transform.rotation.z) > 0.5) {
+        //     Debug.Log("Too Much Rotation");
+        //     SetReward(-50000f);
+        //     EndEpisode();            
+        // }
 
         // float distToGoal = Vector3.Distance(transform.position, goalPosition);
         // if ((Time.realtimeSinceStartup - episode_start_time) > 5f){
@@ -180,14 +205,5 @@ public class JetMovementAgent : Agent
         fighterjetRB.velocity = new Vector3(0, 0, 0);
         transform.position = initPos;
         transform.rotation = initRot;
-
-        // bool isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
-        // if (isInference) {
-        //     Time.timeScale = 1f;
-        // } else {
-        //     Time.timeScale = 10f;
-        // }
-
-        Time.timeScale = 100f;
     }
 }

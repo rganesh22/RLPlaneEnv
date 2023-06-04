@@ -15,12 +15,11 @@ from gym_unity.envs import UnityToGymWrapper
 
 import torch
 
-model = PPO.load('stable_results\ppo\\lastmodel')
+# model = PPO.load('latest_model')
+model = PPO.load('just_fly')
 
 unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlightExample")
 env = UnityToGymWrapper(unity_env, uint8_visual=False) 
-
-UnityEnvironment()
 
 for episode in range(10):
     initial_observation = env.reset()
@@ -29,8 +28,8 @@ for episode in range(10):
     while not done:
         action, _ = model.predict(initial_observation)
         observation, reward, done, info = env.step(action)
-        # print('observation', observation)
-        # print('action', action)
+        print('observation', observation)
+        print('action', action)
         episode_rewards += reward
     print("Total reward this episode: {}".format(episode_rewards))
 
