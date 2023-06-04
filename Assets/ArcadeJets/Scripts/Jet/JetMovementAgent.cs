@@ -29,6 +29,8 @@ public class JetMovementAgent : Agent
         initPos = gameObject.transform.position;
         initRot = gameObject.transform.rotation;
 
+        Time.timeScale = 100f;
+
         SetResetParameters();
     }
 
@@ -188,6 +190,6 @@ public class JetMovementAgent : Agent
         //     Time.timeScale = 10f;
         // }
 
-        Time.timeScale = 1f;
+        Time.timeScale = 100f;
     }
 }
