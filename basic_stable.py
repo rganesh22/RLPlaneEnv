@@ -47,6 +47,9 @@ if __name__ == "__main__":
 
     # model = DDPG("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
     # model = DDPG("CnnPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
+
+    # model = DQN("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
+    # model = DQN("CnnPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
     model.learn(total_timesteps=10000)
 
     #evaluate agent
