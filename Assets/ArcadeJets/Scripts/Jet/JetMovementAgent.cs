@@ -29,6 +29,8 @@ public class JetMovementAgent : Agent
         initPos = gameObject.transform.position;
         initRot = gameObject.transform.rotation;
 
+        Time.timeScale = 100f;
+
         SetResetParameters();
 
         // bool isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
@@ -205,5 +207,14 @@ public class JetMovementAgent : Agent
         fighterjetRB.velocity = new Vector3(0, 0, 0);
         transform.position = initPos;
         transform.rotation = initRot;
+
+        // bool isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
+        // if (isInference) {
+        //     Time.timeScale = 1f;
+        // } else {
+        //     Time.timeScale = 10f;
+        // }
+
+        Time.timeScale = 1f;
     }
 }
