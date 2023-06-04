@@ -29,7 +29,7 @@ public class JetMovementAgent : Agent
         initPos = gameObject.transform.position;
         initRot = gameObject.transform.rotation;
 
-        Time.timeScale = 100f;
+        Time.timeScale = 5f;
 
         SetResetParameters();
 
@@ -40,7 +40,7 @@ public class JetMovementAgent : Agent
         //     Time.timeScale = 10f;
         // }
 
-        Time.timeScale = 100f;
+        // Time.timeScale = 100f;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -81,44 +81,45 @@ public class JetMovementAgent : Agent
         float distToGoal = Vector3.Distance(transform.position, goalPosition);
 
 
-        // Working Reward Function
-        // if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
-        //     Debug.Log("Took too long :(");
-        //     // AddReward(-30000f);
-        //     EndEpisode();
-        // } else if (transform.position.y < 10){
-        //     Debug.Log("Hit the Ground :(");
-        //     AddReward(-50000f);
-        //     EndEpisode();
-        // } else {
-        //     // speed + not hitting ground
-        //     float reward = 0;
-        //     reward += 0.2f * fighterjetRB.velocity.magnitude;
-        //     reward -= 0.3f * distToGoal;
-        //     AddReward(reward);
-        // }
-        
-
+        // Working Reward Function --> no_grounding_speed_distance
         if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
             Debug.Log("Took too long :(");
             // AddReward(-30000f);
             EndEpisode();
-        } else if (distToGoal < 100) {
-            Debug.Log("Reached Goal!");
-            AddReward(5000);
-            EndEpisode();
         } else if (transform.position.y < 10){
             Debug.Log("Hit the Ground :(");
-            AddReward(-500f);
-            // EndEpisode();
+            AddReward(-50000f);
+            EndEpisode();
         } else {
             // speed + not hitting ground
             float reward = 0;
-            // reward += 1f * fighterjetRB.velocity.magnitude;
-            // reward -= 1f * distToGoal;
-            reward -= 1;
+            reward += 0.2f * fighterjetRB.velocity.magnitude;
+            reward -= 0.3f * distToGoal;
             AddReward(reward);
         }
+        
+
+        // // not working but just_fly_plus_highweight_target
+        // if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
+        //     Debug.Log("Took too long :(");
+        //     // AddReward(-30000f);
+        //     EndEpisode();
+        // } else if (distToGoal < 100) {
+        //     Debug.Log("Reached Goal!");
+        //     AddReward(50000f);
+        //     EndEpisode();
+        // } else if (transform.position.y < 10){
+        //     Debug.Log("Hit the Ground :(");
+        //     AddReward(-500f);
+        //     // EndEpisode();
+        // } else {
+        //     // speed + not hitting ground
+        //     float reward = 0;
+        //     // reward += 1f * fighterjetRB.velocity.magnitude;
+        //     // reward -= 1f * distToGoal;
+        //     reward -= 1;
+        //     AddReward(reward);
+        // }
 
         // Debug.Log((goalPosition - transform.position).x);
         // Debug.Log((goalPosition - transform.position).y);
@@ -215,6 +216,6 @@ public class JetMovementAgent : Agent
         //     Time.timeScale = 10f;
         // }
 
-        Time.timeScale = 1f;
+        // Time.timeScale = 1f;
     }
 }
