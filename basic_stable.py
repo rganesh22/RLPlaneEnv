@@ -15,23 +15,23 @@ if __name__ == "__main__":
     # env_path = "/Users/anwesha/Documents/Stanford/cs-stanford/cs224r/RLPlaneEnv"
     # env = UnityEnv(env_path, worker_id=2, use_visual=True)
 
-    unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", no_graphics=True)
-    # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample")
+    # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", no_graphics=True)
+    unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", worker_id=2)
     env = UnityToGymWrapper(unity_env, uint8_visual=False) 
 
     # Create log dir
     time_int = int(time.time())
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
-    reward_func = "no_grounding"
+    reward_func = "only_time_and_distance"
     log_dir = f"stable_results/ppo/{reward_func}/{time_int}"
     os.makedirs(log_dir, exist_ok=True)
     env = Monitor(env, log_dir, allow_early_resets=True)
 
     env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
 
-    model = PPO("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
-    # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, verbose=1, tensorboard_log=log_dir)
+    # model = PPO("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
+    model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, verbose=1, tensorboard_log=log_dir)
     # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, gamma=0.95, verbose=1, tensorboard_log=log_dir)
     # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, gamma=0.95, clip_range=0.5, verbose=1, tensorboard_log=log_dir)
     # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, batch_size=32, verbose=1, tensorboard_log=log_dir)
@@ -50,19 +50,23 @@ if __name__ == "__main__":
 
     # model = DQN("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
     # model = DQN("CnnPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
-    model.learn(total_timesteps=10000)
+    model.learn(total_timesteps=100000)
 
     #evaluate agent
+
+    eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlightExample")
+    eval_env = UnityToGymWrapper(eval_unity_env, uint8_visual=False) 
+
     episodes = 100
     ep_r = []
     ep_l = []
     for e in range(episodes):
-        obs = env.reset()
+        obs = eval_env.reset()
         total_r = 0.
         total_l = 0.
         while True:
             action, _states = model.predict(obs)
-            obs, reward, done, info = env.step(action)
+            obs, reward, done, info = eval_env.step(action)
             # if e < 20:
             #     print(f'Observation: {obs} \n')
             #     print(f'Action: {action} \n\n')
@@ -77,5 +81,6 @@ if __name__ == "__main__":
         pickle.dump(ep_r, f)
         pickle.dump(ep_l, f)
 
-    env.close()
-    model.save(log_dir+"model")
+    eval_env.close()
+    model.save(log_dir+"/model")
+    model.save("latest_model")
