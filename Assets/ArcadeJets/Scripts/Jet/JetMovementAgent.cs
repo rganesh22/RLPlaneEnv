@@ -29,7 +29,7 @@ public class JetMovementAgent : Agent
         initPos = gameObject.transform.position;
         initRot = gameObject.transform.rotation;
 
-        Time.timeScale = 100f;
+        Time.timeScale = 1f;
 
         SetResetParameters();
 
