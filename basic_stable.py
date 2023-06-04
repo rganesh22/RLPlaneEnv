@@ -4,18 +4,19 @@ from gym_unity.envs import UnityToGymWrapper
 import numpy as np
 # from stable_baselines3.common.policies import MlpPolicy
 from stable_baselines3.common.vec_env import DummyVecEnv
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, DDPG, DQN
 from stable_baselines3.common.monitor import Monitor
 import os
 import time
 import pickle
+from pathlib import Path
 
 if __name__ == "__main__":
     # env_path = <PATH TO RLPlaneEnv>
     # env_path = "/Users/anwesha/Documents/Stanford/cs-stanford/cs224r/RLPlaneEnv"
     # env = UnityEnv(env_path, worker_id=2, use_visual=True)
 
-    unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", no_graphics=True)
+    unity_env = UnityEnvironment("Build/ArcadePlaneBuild", no_graphics=True)
     # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", worker_id=2)
     env = UnityToGymWrapper(unity_env, uint8_visual=False) 
 
@@ -24,14 +25,14 @@ if __name__ == "__main__":
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
     reward_func = "only_time_and_distance"
-    log_dir = f"stable_results/ppo/{reward_func}/{time_int}"
+    log_dir = f"stable_results/ddpg/{reward_func}/{time_int}"
     os.makedirs(log_dir, exist_ok=True)
     env = Monitor(env, log_dir, allow_early_resets=True)
 
     env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
 
     # model = PPO("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
-    model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, verbose=1, tensorboard_log=log_dir)
+    # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, verbose=1, tensorboard_log=log_dir)
     # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, gamma=0.95, verbose=1, tensorboard_log=log_dir)
     # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, gamma=0.95, clip_range=0.5, verbose=1, tensorboard_log=log_dir)
     # model = PPO("MlpPolicy", env, n_steps=500, learning_rate=1e-2, batch_size=32, verbose=1, tensorboard_log=log_dir)
@@ -45,7 +46,7 @@ if __name__ == "__main__":
 
     # model = PPO("CnnPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
 
-    # model = DDPG("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
+    model = DDPG("MlpPolicy", env, n_steps=500, learning_rate=1e-2, verbose=1, tensorboard_log=log_dir)
     # model = DDPG("CnnPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
 
     # model = DQN("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)
@@ -53,13 +54,18 @@ if __name__ == "__main__":
     model.learn(total_timesteps=100000)
 
     #evaluate agent
-
-    eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlightExample")
+    eval_unity_env = UnityEnvironment("Eval_Build/ArcadePlaneBuild")
     eval_env = UnityToGymWrapper(eval_unity_env, uint8_visual=False) 
 
     episodes = 100
     ep_r = []
     ep_l = []
+    longfile = Path(f"stable_results/ddpg/{time_int}_longlogs.txt")
+    longfile.touch(exist_ok=True)
+    logfile = Path(f"stable_results/ddpg/{time_int}_readlogs.txt")
+    logfile.touch(exist_ok=True)
+    print(logfile)
+    print(longfile)
     for e in range(episodes):
         obs = eval_env.reset()
         total_r = 0.
@@ -74,17 +80,18 @@ if __name__ == "__main__":
             total_r += reward
             if done:
                 break
-            with open(f"stable_results/ppo/{reward_func}/{time_int}/longlogs.txt", 'a+') as logfile:
-                logfile.write(f"Episode: {e}, Observation: {obs}, Action: {action}, Action Reward: {reward}, Total Reward: {total_r}, Current Total Length: {total_l} \n")
+            with open(longfile, 'a') as file1:
+                file1.write(f"Episode: {e}, Observation: {obs}, Action: {action}, Action Reward: {reward}, Total Reward: {total_r}, Current Total Length: {total_l} \n")
         ep_r.append(total_r)
         ep_l.append(total_l)
-        with open(f"stable_results/ppo/{reward_func}/{time_int}/readlogs.txt", 'a+') as readfile:
-            readfile.write(f"Episode: {e}, Total Reward: {total_r}, Total Length: {total_l} \n")
-    print("episode mean reward: {:0.3f} mean length: {:0.3f}".format(np.mean(ep_r), np.mean(ep_l)))
+        with open(logfile, 'a') as file2:
+            file2.write(f"Episode: {e}, Total Reward: {total_r}, Total Length: {total_l} \n")
+    # print("episode mean reward: {:0.3f} mean length: {:0.3f}".format(np.mean(ep_r), np.mean(ep_l)))
     with open('{}_eval.pkl'.format(log_dir), 'wb') as f:
         pickle.dump(ep_r, f)
         pickle.dump(ep_l, f)
 
+    env.close()
     eval_env.close()
     model.save(log_dir+"/model")
     model.save("latest_model")
