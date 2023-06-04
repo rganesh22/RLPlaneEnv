@@ -190,6 +190,6 @@ public class JetMovementAgent : Agent
         //     Time.timeScale = 10f;
         // }
 
-        Time.timeScale = 100f;
+        // Time.timeScale = 100f;
     }
 }

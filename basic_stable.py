@@ -15,8 +15,8 @@ if __name__ == "__main__":
     # env_path = "/Users/anwesha/Documents/Stanford/cs-stanford/cs224r/RLPlaneEnv"
     # env = UnityEnv(env_path, worker_id=2, use_visual=True)
 
-    # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", no_graphics=True)
-    unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", worker_id=2)
+    unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", no_graphics=True)
+    # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", worker_id=2)
     env = UnityToGymWrapper(unity_env, uint8_visual=False) 
 
     # Create log dir
@@ -74,8 +74,12 @@ if __name__ == "__main__":
             total_r += reward
             if done:
                 break
+            with open(f"stable_results/ppo/{reward_func}/{time_int}/longlogs.txt", 'a+') as logfile:
+                logfile.write(f"Episode: {e}, Observation: {obs}, Action: {action}, Action Reward: {reward}, Total Reward: {total_r}, Current Total Length: {total_l} \n")
         ep_r.append(total_r)
         ep_l.append(total_l)
+        with open(f"stable_results/ppo/{reward_func}/{time_int}/readlogs.txt", 'a+') as readfile:
+            readfile.write(f"Episode: {e}, Total Reward: {total_r}, Total Length: {total_l} \n")
     print("episode mean reward: {:0.3f} mean length: {:0.3f}".format(np.mean(ep_r), np.mean(ep_l)))
     with open('{}_eval.pkl'.format(log_dir), 'wb') as f:
         pickle.dump(ep_r, f)
