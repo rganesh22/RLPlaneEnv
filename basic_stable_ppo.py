@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # env_path = "/Users/anwesha/Documents/Stanford/cs-stanford/cs224r/RLPlaneEnv"
     # env = UnityEnv(env_path, worker_id=2, use_visual=True)
 
-    unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", no_graphics=True)
+    unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", worker_id = 1, base_port = 2)
     # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample")
     env = UnityToGymWrapper(unity_env, uint8_visual=False) 
 

@@ -18,6 +18,8 @@ public class JetMovementAgent : Agent
     Vector3 initPos;
     Quaternion initRot;
 
+    private float episode_start_time;
+
     public override void Initialize()
     {
         fighterjetRB = GetComponent<Rigidbody>();
@@ -61,15 +63,29 @@ public class JetMovementAgent : Agent
         GetComponent<StickInput>().Pitch = stickInputX;
         GetComponent<StickInput>().Roll =  stickInputY;
         GetComponent<StickInput>().Yaw =  stickInputZ;
-        GetComponent<StickInput>().Throttle = throttleTarget;
+        // GetComponent<StickInput>().Throttle = throttleTarget;
+        GetComponent<StickInput>().Throttle = 1f;
 
         float distToGoal = Vector3.Distance(transform.position, goalPosition);
-        if (transform.position.y < 5){
+        if ((Time.realtimeSinceStartup - episode_start_time) > 5f){
+            Debug.Log("Took too long :(");
+            AddReward(-500f);
+            EndEpisode();
+        } else if (transform.position.y < 10){
             Debug.Log("Hit the Ground :(");
-            SetReward(-500000f);
+            AddReward(-500f);
+            EndEpisode();
+        } else if (distToGoal < 2) {
+            Debug.Log("Reached Goal!");
+            AddReward(500f);
             EndEpisode();
         } else {
-            float reward = -0.000001f * distToGoal * distToGoal;
+            float reward = -0.1f * Mathf.Pow(distToGoal, 2);
+            // reward += (1000 * transform.position.y);
+            // reward += (10 * fighterjetRB.velocity.magnitude);
+            // if (transform.rotation.y > 150) {
+            //    SetReward(-4000f); 
+            // }
             // float reward = 0f;
             SetReward(reward);
         }
@@ -123,6 +139,7 @@ public class JetMovementAgent : Agent
 
     public void SetResetParameters()
     {
+        episode_start_time = Time.realtimeSinceStartup;
         fighterjetRB.velocity = new Vector3(0, 0, 0);
         transform.position = initPos;
         transform.rotation = initRot;
