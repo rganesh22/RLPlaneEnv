@@ -16,34 +16,46 @@ if __name__ == "__main__":
     # env_path = <PATH TO RLPlaneEnv>
     # env_path = "/Users/anwesha/Documents/Stanford/cs-stanford/cs224r/RLPlaneEnv"
     # env = UnityEnv(env_path, worker_id=2, use_visual=True)
-
-    
-
     # Create log dir
     # time_int = int(time.time())
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
-    reward_func = "just_fly_plus_highweight_target"
+    reward_func = "no_grounding_speed_distance"
     # log_dir = f"stable_results/ddpg/{reward_func}/{time_int}"
-    for lr in [5e-3, 1e-2]:
+    for lr in [5e-3, 1e-2, 5e-2]:
         if lr == 5e-3: lr_str = "5e-3" 
+        elif lr == 5e-2: lr_str = "5e-2" 
         else: lr_str = "1e-2"
         for gamma in [0.99, 0.95]:
-            gamma_str = f"point{gamma * 100}"
+            gamma_str = f"point{int(gamma * 100)}"
             for batch_size in [64, 32]:
                 unity_env = UnityEnvironment("Build/ArcadeJetFlight", no_graphics=True, worker_id=2)
                 # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", worker_id=2)
                 env = UnityToGymWrapper(unity_env, uint8_visual=False) 
                 log_dir = f"stable_results/ppo/anwesharuns/{reward_func}/lr{lr_str}_gamma{gamma_str}_batch{batch_size}/"
+                video_folder = f"{log_dir}/videos/"
                 os.makedirs(log_dir, exist_ok=True)
+                os.makedirs(video_folder, exist_ok=True)
                 env = Monitor(env, log_dir, allow_early_resets=True)
                 env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
                 model = PPO("MlpPolicy", env, n_steps=512, learning_rate=lr, gamma=gamma, batch_size=batch_size, verbose=1, tensorboard_log=log_dir)
                 model.learn(total_timesteps=50000)
                 model.save(log_dir+"/model")
+                # make a gif
+                # images = []
+                # obs = model.env.reset()
+                # img = model.env.render(mode='rgb_array')
+                # for i in range(150):
+                #     images.append(img)
+                #     action, _ = model.predict(obs)
+                #     obs, _, _ ,_ = model.env.step(action)
+                #     img = model.env.render(mode='rgb_array')
+
+                # imageio.mimsave(video_folder+'sample.gif', [np.array(img) for i, img in enumerate(images) if i%2 == 0], duration=5)
                 env.close()
                 time.sleep(60) # give ports time to clear up
 
+                # make it record videos
                 eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlight", no_graphics=False)
                 eval_env = UnityToGymWrapper(eval_unity_env, uint8_visual=False) 
                 episodes = 100
@@ -56,6 +68,12 @@ if __name__ == "__main__":
                 print(logfile)
                 print(longfile)
                 for e in range(episodes):
+                    # if e == 99:    
+                    #     eval_env = DummyVecEnv([lambda: eval_env])
+                    #     eval_env = VecVideoRecorder(eval_env, video_folder, 
+                    #                             record_video_trigger=lambda x: x ==0, 
+                    #                             video_length=200, 
+                    #                             name_prefix=f"sample_video")
                     obs = eval_env.reset()
                     total_r = 0.
                     total_l = 0.
@@ -67,7 +85,7 @@ if __name__ == "__main__":
                         if done:
                             break
                         with open(longfile, 'a') as file1:
-                            file1.write(f"Episode: {e}, Observation: {obs}, Action: {action}, Action Reward: {reward}, Total Reward: {total_r}, Current Total Length: {total_l} \n")
+                            file1.write(f"Episode: {e}\n Observation:\n {obs}\n Action:\n {action}\n Action Reward: {reward}, Total Reward: {total_r}, Current Total Length: {total_l} \n\n")
                     ep_r.append(total_r)
                     ep_l.append(total_l)
                     with open(logfile, 'a') as file2:
@@ -77,16 +95,6 @@ if __name__ == "__main__":
                     pickle.dump(ep_r, f)
                     pickle.dump(ep_l, f)
                 
-                images = []
-                obs = model.env.reset()
-                img = model.env.render(mode='rgb_array')
-                for i in range(350):
-                    images.append(img)
-                    action, _ = model.predict(obs)
-                    obs, _, _ ,_ = model.env.step(action)
-                    img = model.env.render(mode='rgb_array')
-
-                imageio.mimsave(log_dir+'/sample.gif', [np.array(img) for i, img in enumerate(images) if i%2 == 0], fps=29)
                 eval_env.close()
                 time.sleep(60)
 
@@ -218,7 +226,7 @@ if __name__ == "__main__":
     #     pickle.dump(ep_r, f)
     #     pickle.dump(ep_l, f)
 
-    env.close()
-    eval_env.close()
+    # env.close()
+    # eval_env.close()
     # model.save(log_dir+"/model")
     # model.save("latest_model")
