@@ -40,7 +40,7 @@ public class JetMovementAgent : Agent
         //     Time.timeScale = 10f;
         // }
 
-        Time.timeScale = 100f;
+        // Time.timeScale = 100f;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -105,7 +105,7 @@ public class JetMovementAgent : Agent
             EndEpisode();
         } else if (distToGoal < 100) {
             Debug.Log("Reached Goal!");
-            AddReward(5000);
+            AddReward(50000f);
             EndEpisode();
         } else if (transform.position.y < 10){
             Debug.Log("Hit the Ground :(");
@@ -215,6 +215,6 @@ public class JetMovementAgent : Agent
         //     Time.timeScale = 10f;
         // }
 
-        Time.timeScale = 1f;
+        // Time.timeScale = 1f;
     }
 }
