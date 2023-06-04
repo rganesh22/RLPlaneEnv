@@ -81,7 +81,7 @@ public class JetMovementAgent : Agent
         float distToGoal = Vector3.Distance(transform.position, goalPosition);
 
 
-        // Working Reward Function
+        // Working Reward Function --> no_grounding_speed_distance
         if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
             Debug.Log("Took too long :(");
             // AddReward(-30000f);
@@ -99,6 +99,7 @@ public class JetMovementAgent : Agent
         }
         
 
+        // // not working but just_fly_plus_highweight_target
         // if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
         //     Debug.Log("Took too long :(");
         //     // AddReward(-30000f);
