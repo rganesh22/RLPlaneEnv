@@ -97,3 +97,4 @@ Episode: 95, Total Reward: -69225.3125, Total Length: 16.0
 Episode: 96, Total Reward: -75510.48446655273, Total Length: 42.0 
 Episode: 97, Total Reward: -439235.21505355835, Total Length: 228.0 
 Episode: 98, Total Reward: -1391426.4848136902, Total Length: 501.0 
+Episode: 99, Total Reward: -1121044.5686187744, Total Length: 452.0 
