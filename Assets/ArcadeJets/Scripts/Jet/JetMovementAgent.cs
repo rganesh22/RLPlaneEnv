@@ -117,11 +117,11 @@ public class JetMovementAgent : Agent
             EndEpisode();
         } else {
             // speed + not hitting ground
-            float reward = -0.001f;
-            reward -= 0.00001f * Mathf.Abs(distToGoal);
-            if (reward <= -1f) {
-                EndEpisode();
-            }
+            // float reward = -0.001f;
+            float reward = -0.001f * Mathf.Abs(distToGoal);
+            // if (reward <= -1f) {
+            //     EndEpisode();
+            // }
             // reward += 0.2f * fighterjetRB.velocity.magnitude;
             // reward -= 0.3f * distToGoal;           
             AddReward(reward);
