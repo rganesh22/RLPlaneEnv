@@ -15,8 +15,8 @@ from gym_unity.envs import UnityToGymWrapper
 
 import torch
 
-# model = PPO.load('latest_model')
-model = PPO.load('just_fly')
+model = PPO.load('latest_model')
+# model = PPO.load('just_fly')
 
 unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlightExample")
 env = UnityToGymWrapper(unity_env, uint8_visual=False) 
