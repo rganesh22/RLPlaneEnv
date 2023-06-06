@@ -29,18 +29,12 @@ public class JetMovementAgent : Agent
         initPos = gameObject.transform.position;
         initRot = gameObject.transform.rotation;
 
+        // Uncomment to build for eval
         Time.timeScale = 3f;
+        // Uncomment to build for train
+        // Time.timeScale = 100f;
 
         SetResetParameters();
-
-        // bool isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
-        // if (isInference) {
-        //     Time.timeScale = 1f;
-        // } else {
-        //     Time.timeScale = 10f;
-        // }
-
-        // Time.timeScale = 100f;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -116,13 +110,12 @@ public class JetMovementAgent : Agent
             EndEpisode();
         } else {
             // speed + not hitting ground
-            float reward = -0.001f;
-            reward -= 0.0001f * Mathf.Abs(distToGoal);
-            if (reward <= -1f):
-                EndEpisode();
+            float reward = -0.01f;
+            // reward = -0.0001f * (distToGoal);
             // reward += 0.2f * fighterjetRB.velocity.magnitude;
             // reward -= 0.3f * distToGoal;           
             AddReward(reward);
+            // float episode_reward = GetCumulativeReward();\
         }
         
 
@@ -240,14 +233,5 @@ public class JetMovementAgent : Agent
         fighterjetRB.velocity = new Vector3(0, 0, 0);
         transform.position = initPos;
         transform.rotation = initRot;
-
-        // bool isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
-        // if (isInference) {
-        //     Time.timeScale = 1f;
-        // } else {
-        //     Time.timeScale = 10f;
-        // }
-
-        // Time.timeScale = 1f;
     }
 }

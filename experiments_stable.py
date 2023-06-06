@@ -20,9 +20,9 @@ if __name__ == "__main__":
     # time_int = int(time.time())
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
-    reward_func = "new_obs_fly_target_only"
+    reward_func = "new_obs_fly_target_time_dist"
     # log_dir = f"stable_results/ddpg/{reward_func}/{time_int}"
-    for lr in [1e-2, 5e-2, 5e-3]:
+    for lr in [1e-4, 1e-3, 1e-2, 5e-2, 5e-3]:
         if lr == 5e-3: lr_str = "5e-3" 
         elif lr == 5e-2: lr_str = "5e-2" 
         else: lr_str = "1e-2"
@@ -32,7 +32,7 @@ if __name__ == "__main__":
                 unity_env = UnityEnvironment("Build/ArcadeJetFlight", no_graphics=True, worker_id=2)
                 # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", worker_id=2)
                 env = UnityToGymWrapper(unity_env, uint8_visual=False) 
-                log_dir = f"stable_results/ppo/anwesharuns/{reward_func}/lr{lr_str}_gamma{gamma_str}_batch{batch_size}/"
+                log_dir = f"stable_results/ppo/small_reward/{reward_func}/lr{lr_str}_gamma{gamma_str}_batch{batch_size}/"
                 video_folder = f"{log_dir}/videos/"
                 os.makedirs(log_dir, exist_ok=True)
                 os.makedirs(video_folder, exist_ok=True)
@@ -58,7 +58,7 @@ if __name__ == "__main__":
                 # make it record videos
                 eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlight", no_graphics=False, worker_id=3)
                 eval_env = UnityToGymWrapper(eval_unity_env, uint8_visual=False) 
-                episodes = 100
+                episodes = 50
                 ep_r = []
                 ep_l = []
                 longfile = Path(f"{log_dir}/longlogs.txt")
