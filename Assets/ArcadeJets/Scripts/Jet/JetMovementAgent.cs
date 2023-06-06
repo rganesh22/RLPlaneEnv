@@ -30,6 +30,7 @@ public class JetMovementAgent : Agent
         initRot = gameObject.transform.rotation;
 
         Time.timeScale = 3f;
+        // Time.timeScale = 100f;
 
         SetResetParameters();
 
@@ -117,9 +118,10 @@ public class JetMovementAgent : Agent
         } else {
             // speed + not hitting ground
             float reward = -0.001f;
-            reward -= 0.0001f * Mathf.Abs(distToGoal);
-            if (reward <= -1f):
+            reward -= 0.00001f * Mathf.Abs(distToGoal);
+            if (reward <= -1f) {
                 EndEpisode();
+            }
             // reward += 0.2f * fighterjetRB.velocity.magnitude;
             // reward -= 0.3f * distToGoal;           
             AddReward(reward);
