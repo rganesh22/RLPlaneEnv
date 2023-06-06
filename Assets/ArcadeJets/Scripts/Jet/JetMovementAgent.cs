@@ -59,14 +59,18 @@ public class JetMovementAgent : Agent
             // sensor.AddObservation(fighterjetRB.velocity.y);
             // sensor.AddObservation(fighterjetRB.velocity.z);
 
-            sensor.AddObservation((goalPosition - transform.position).x);
-            sensor.AddObservation((goalPosition - transform.position).y);
-            sensor.AddObservation((goalPosition - transform.position).z);
-
             sensor.AddObservation(GetComponent<StickInput>().Throttle);
             sensor.AddObservation(GetComponent<StickInput>().Pitch);
             sensor.AddObservation(GetComponent<StickInput>().Roll);
             sensor.AddObservation(GetComponent<StickInput>().Yaw);
+
+            sensor.AddObservation(0f);
+            sensor.AddObservation(0f);
+            sensor.AddObservation(0f);
+
+            // sensor.AddObservation((goalPosition - transform.position).x);
+            // sensor.AddObservation((goalPosition - transform.position).y);
+            // sensor.AddObservation((goalPosition - transform.position).z);
         }
     }
 
@@ -85,13 +89,24 @@ public class JetMovementAgent : Agent
         
         float distToGoal = Vector3.Distance(transform.position, goalPosition);
 
-
         // Working Reward Function --> no_grounding_speed_distance
-        if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
-            Debug.Log("Took too long :(");
-            // AddReward(-30000f);
-            // EndEpisode();
-        } else if (transform.position.y < 10){
+        // if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
+        //     Debug.Log("Took too long :(");
+        //     // AddReward(-30000f);
+        //     // EndEpisode();
+        // } else 
+        
+        if (throttleTarget < 0) {
+            EndEpisode();
+            return;
+        }
+        
+        if ((Mathf.Abs(stickInputX) > 0.75) || (Mathf.Abs(stickInputY) > 0.75) || (Mathf.Abs(stickInputZ) > 0.75)) {
+            EndEpisode();
+            return;
+        }
+
+        if (transform.position.y < 10){
             Debug.Log("Hit the Ground :(");
             // AddReward(-50000f);
             EndEpisode();

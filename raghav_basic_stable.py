@@ -60,7 +60,7 @@ if __name__ == "__main__":
     
     # model.learn(total_timesteps=100000)
     # model.learn(total_timesteps=200000)
-    model.learn(total_timesteps=1000000)
+    model.learn(total_timesteps=500000)
     
     model.save(log_dir+"/model")
     model.save("latest_model")
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     env.close()
 
     #evaluate agent
-    eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlightExample")
+    eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlightExample", worker_id=3)
     eval_env = UnityToGymWrapper(eval_unity_env, uint8_visual=False) 
 
     episodes = 100
