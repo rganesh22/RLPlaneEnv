@@ -64,13 +64,13 @@ public class JetMovementAgent : Agent
             sensor.AddObservation(GetComponent<StickInput>().Roll);
             sensor.AddObservation(GetComponent<StickInput>().Yaw);
 
-            sensor.AddObservation(0f);
-            sensor.AddObservation(0f);
-            sensor.AddObservation(0f);
+            // sensor.AddObservation(1f);
+            // sensor.AddObservation(1f);
+            // sensor.AddObservation(1f);
 
-            // sensor.AddObservation((goalPosition - transform.position).x);
-            // sensor.AddObservation((goalPosition - transform.position).y);
-            // sensor.AddObservation((goalPosition - transform.position).z);
+            sensor.AddObservation((goalPosition - transform.position).x);
+            sensor.AddObservation((goalPosition - transform.position).y);
+            sensor.AddObservation((goalPosition - transform.position).z);
         }
     }
 
@@ -96,29 +96,68 @@ public class JetMovementAgent : Agent
         //     // EndEpisode();
         // } else 
         
-        if (throttleTarget < 0) {
-            EndEpisode();
-            return;
-        }
+        // if (throttleTarget < 0) {
+        //     AddReward(-500f);
+        //     EndEpisode();
+        //     return;
+        // }
         
-        if ((Mathf.Abs(stickInputX) > 0.75) || (Mathf.Abs(stickInputY) > 0.75) || (Mathf.Abs(stickInputZ) > 0.75)) {
-            EndEpisode();
-            return;
-        }
+        // if ((Mathf.Abs(stickInputX) > 0.5) || (Mathf.Abs(stickInputY) > 0.5) || (Mathf.Abs(stickInputZ) > 0.5)) {
+        //     EndEpisode();
+        //     return;
+        // }
 
+        // if (Mathf.Abs(transform.rotation.y) > 90) {
+        //     AddReward(-500f);
+        //     EndEpisode();
+        //     return;
+        // }
+
+        // [HIT TARGET!]
         if (transform.position.y < 10){
             Debug.Log("Hit the Ground :(");
-            // AddReward(-50000f);
+            SetReward(-1f);
+            EndEpisode();
+        } else if (distToGoal < 50) {
+            Debug.Log("Reached Goal!");
+            SetReward(1f);
             EndEpisode();
         } else {
             // speed + not hitting ground
             float reward = 0;
             // reward += 0.2f * fighterjetRB.velocity.magnitude;
-            // reward -= 0.3f * distToGoal;
-            reward += 1;           
-            AddReward(reward);
+            reward -= 0.001f * distToGoal;
+            reward += 0.001f;
+            SetReward(reward);
         }
         
+        // [JUST FLY!]
+        if (transform.position.y < 10){
+            Debug.Log("Hit the Ground :(");
+            // SetReward(-1f);
+            EndEpisode();
+        // } else if (distToGoal < 50) {
+        //     Debug.Log("Reached Goal!");
+        //     SetReward(1f);
+        //     EndEpisode();
+        } else {
+            // speed + not hitting ground
+            float reward = 0;
+            // reward += 0.2f * fighterjetRB.velocity.magnitude;
+            // reward -= 0.001f * distToGoal;
+            reward += 0.001f;
+            if (reward == 1) {
+                EndEpisode();
+                return;
+            }
+            // if (reward <= -1f) {
+            //     SetReward(-1f);
+            //     EndEpisode();
+            // }
+            // reward += 1;
+            SetReward(reward);
+        }
+
 
         // // not working but just_fly_plus_highweight_target
         // if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
