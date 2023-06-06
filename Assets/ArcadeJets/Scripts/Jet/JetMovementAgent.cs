@@ -29,7 +29,7 @@ public class JetMovementAgent : Agent
         initPos = gameObject.transform.position;
         initRot = gameObject.transform.rotation;
 
-        Time.timeScale = 5f;
+        Time.timeScale = 3f;
 
         SetResetParameters();
 
@@ -40,7 +40,7 @@ public class JetMovementAgent : Agent
         //     Time.timeScale = 10f;
         // }
 
-        Time.timeScale = 100f;
+        // Time.timeScale = 100f;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -64,13 +64,13 @@ public class JetMovementAgent : Agent
             sensor.AddObservation(GetComponent<StickInput>().Roll);
             sensor.AddObservation(GetComponent<StickInput>().Yaw);
 
-            sensor.AddObservation(0f);
-            sensor.AddObservation(0f);
-            sensor.AddObservation(0f);
+            // sensor.AddObservation(0f);
+            // sensor.AddObservation(0f);
+            // sensor.AddObservation(0f);
 
-            // sensor.AddObservation((goalPosition - transform.position).x);
-            // sensor.AddObservation((goalPosition - transform.position).y);
-            // sensor.AddObservation((goalPosition - transform.position).z);
+            sensor.AddObservation((goalPosition - transform.position).x);
+            sensor.AddObservation((goalPosition - transform.position).y);
+            sensor.AddObservation((goalPosition - transform.position).z);
         }
     }
 
@@ -96,26 +96,32 @@ public class JetMovementAgent : Agent
         //     // EndEpisode();
         // } else 
         
-        if (throttleTarget < 0) {
-            EndEpisode();
-            return;
-        }
+        // if (throttleTarget < 0) {
+        //     EndEpisode();
+        //     return;
+        // }
         
-        if ((Mathf.Abs(stickInputX) > 0.75) || (Mathf.Abs(stickInputY) > 0.75) || (Mathf.Abs(stickInputZ) > 0.75)) {
-            EndEpisode();
-            return;
-        }
+        // if ((Mathf.Abs(stickInputX) > 0.75) || (Mathf.Abs(stickInputY) > 0.75) || (Mathf.Abs(stickInputZ) > 0.75)) {
+        //     EndEpisode();
+        //     return;
+        // }
 
         if (transform.position.y < 10){
             Debug.Log("Hit the Ground :(");
-            // AddReward(-50000f);
+            SetReward(-1f);
+            EndEpisode();
+        } else if (distToGoal <= 2) {
+            Debug.Log("Reached Target :)");
+            SetReward(1f);
             EndEpisode();
         } else {
             // speed + not hitting ground
-            float reward = 0;
+            float reward = -0.001f;
+            reward -= 0.0001f * Mathf.Abs(distToGoal);
+            if (reward <= -1f):
+                EndEpisode();
             // reward += 0.2f * fighterjetRB.velocity.magnitude;
-            // reward -= 0.3f * distToGoal;
-            reward += 1;           
+            // reward -= 0.3f * distToGoal;           
             AddReward(reward);
         }
         
