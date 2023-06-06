@@ -20,7 +20,7 @@ if __name__ == "__main__":
     # time_int = int(time.time())
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
-    reward_func = "new_obs_fly_target_only"
+    reward_func = "euclidean_no_grounding"
     # log_dir = f"stable_results/ddpg/{reward_func}/{time_int}"
     lr_dict = {
         1e-2:"1e-2",

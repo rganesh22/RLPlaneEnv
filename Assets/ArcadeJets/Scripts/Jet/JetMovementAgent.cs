@@ -118,7 +118,7 @@ public class JetMovementAgent : Agent
         } else {
             // speed + not hitting ground
             // float reward = -0.001f;
-            float reward = -0.001f * Mathf.Abs(distToGoal);
+            float reward = -0.00001f * Mathf.Abs(distToGoal);
             // if (reward <= -1f) {
             //     EndEpisode();
             // }
