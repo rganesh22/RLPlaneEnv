@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
 
-    model = PPO.load('1_reward_just_fly')
+    model = PPO.load('1_reward_just_fly_stationary_target')
     model.set_env(env)
     
     # model = PPO("MlpPolicy", env, n_steps=2048, verbose=1, tensorboard_log=log_dir)
