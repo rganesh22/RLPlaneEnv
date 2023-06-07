@@ -23,7 +23,7 @@ if __name__ == "__main__":
     time_int = int(time.time())
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
-    reward_func = "jump_start_heli_to_plane"
+    reward_func = "jump_start_from_stage_1_to_2"
     log_dir = f"stable_results/ppo/raghavruns/{reward_func}/{time_int}"
     # log_dir = f"stable_results/ddpg/raghavruns/{reward_func}/"
     os.makedirs(log_dir, exist_ok=True)
@@ -31,7 +31,7 @@ if __name__ == "__main__":
 
     env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
 
-    model = PPO.load('../RLHelicopter/a_all_3_steps_ppo')
+    model = PPO.load('../RLHelicopter/a_first_step_ppo')
     model.set_env(env)
     # model = DDPG("MlpPolicy", env, batch_size=512, verbose=1, tensorboard_log=log_dir)    
     
