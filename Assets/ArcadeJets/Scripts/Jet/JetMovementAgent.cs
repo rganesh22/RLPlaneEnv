@@ -44,7 +44,7 @@ public class JetMovementAgent : Agent
         //     Time.timeScale = 10f;
         // }
 
-        Time.timeScale = 100f;
+        // Time.timeScale = 100f;
         // Vector3(-1814.80005,72.3000031,-2119)
     }
 
@@ -118,7 +118,7 @@ public class JetMovementAgent : Agent
         //     return;
         // }
 
-        // [HIT TARGET!]
+        // [(CL STEP 2) HIT TARGET!]
         // Vector3(-1872.30005,72.3000031,-2044.40002)
         if (transform.position.y < 10){
             Debug.Log("Hit the Ground :(");
@@ -136,7 +136,7 @@ public class JetMovementAgent : Agent
             SetReward(reward);
         }
         
-        // [JUST FLY!]
+        // [(CL STEP 1) JUST FLY!]
         // if (transform.position.y < 10){
         //     Debug.Log("Hit the Ground :(");
         //     SetReward(-1f);
@@ -268,7 +268,7 @@ public class JetMovementAgent : Agent
         transform.position = initPos;
         transform.rotation = initRot;
         
-
+        // [(CL STEP 3) HIT RANDOM TARGET!]
         float newX = Random.Range(-80.0f, 80.0f) + initGoalPosition.x;
         float newY = Mathf.Clamp(Random.Range(-80.0f, 80.0f) + initGoalPosition.y, 40f, float.MaxValue);
         float newZ = Random.Range(-80.0f, 80.0f) + initGoalPosition.z;
