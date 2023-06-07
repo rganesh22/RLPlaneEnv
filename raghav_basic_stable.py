@@ -23,7 +23,7 @@ if __name__ == "__main__":
     time_int = int(time.time())
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
-    reward_func = "1_reward_scale_fly_target"
+    reward_func = "1_reward_scale_fly_target_jumpstart"
     # log_dir = f"stable_results/ppo/{reward_func}/{time_int}"
     log_dir = f"stable_results/ppo/raghavruns/{reward_func}/"
     os.makedirs(log_dir, exist_ok=True)
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     
     # model.learn(total_timesteps=100000)
     # model.learn(total_timesteps=200000)
-    model.learn(total_timesteps=50000)
+    model.learn(total_timesteps=70000)
     
     model.save(log_dir+"/model")
     model.save("latest_model")

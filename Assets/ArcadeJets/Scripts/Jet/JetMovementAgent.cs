@@ -11,6 +11,7 @@ public class JetMovementAgent : Agent
 {
     public GameObject jet;
     public bool useVecObs;
+    
     Vector3 goalPosition;
     Rigidbody fighterjetRB;
 
@@ -18,6 +19,7 @@ public class JetMovementAgent : Agent
 
     Vector3 initPos;
     Quaternion initRot;
+    Vector3 initGoalPosition;
 
     private float episode_start_time;
 
@@ -25,6 +27,8 @@ public class JetMovementAgent : Agent
     {
         fighterjetRB = GetComponent<Rigidbody>();
         goalPosition = GameObject.Find("Goal").transform.position;
+
+        initGoalPosition = goalPosition;
       
         initPos = gameObject.transform.position;
         initRot = gameObject.transform.rotation;
@@ -41,6 +45,7 @@ public class JetMovementAgent : Agent
         // }
 
         Time.timeScale = 100f;
+        // Vector3(-1814.80005,72.3000031,-2119)
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -114,6 +119,7 @@ public class JetMovementAgent : Agent
         // }
 
         // [HIT TARGET!]
+        // Vector3(-1872.30005,72.3000031,-2044.40002)
         if (transform.position.y < 10){
             Debug.Log("Hit the Ground :(");
             SetReward(-1f);
@@ -125,39 +131,27 @@ public class JetMovementAgent : Agent
         } else {
             // speed + not hitting ground
             float reward = 0;
-            // reward += 0.2f * fighterjetRB.velocity.magnitude;
             reward -= 0.001f * distToGoal;
             reward += 0.001f;
             SetReward(reward);
         }
         
         // [JUST FLY!]
-        if (transform.position.y < 10){
-            Debug.Log("Hit the Ground :(");
-            // SetReward(-1f);
-            EndEpisode();
-        // } else if (distToGoal < 50) {
-        //     Debug.Log("Reached Goal!");
-        //     SetReward(1f);
+        // if (transform.position.y < 10){
+        //     Debug.Log("Hit the Ground :(");
+        //     SetReward(-1f);
         //     EndEpisode();
-        } else {
-            // speed + not hitting ground
-            float reward = 0;
-            // reward += 0.2f * fighterjetRB.velocity.magnitude;
-            // reward -= 0.001f * distToGoal;
-            reward += 0.001f;
-            if (reward == 1) {
-                EndEpisode();
-                return;
-            }
-            // if (reward <= -1f) {
-            //     SetReward(-1f);
-            //     EndEpisode();
-            // }
-            // reward += 1;
-            SetReward(reward);
-        }
+        // } else {
+        //     // speed + not hitting ground
+        //     float reward = 0;
+        //     reward += 0.0001f;
+        //     SetReward(reward);
+        // }
 
+        // if (reward == 1) {
+        //     EndEpisode();
+        //     return;
+        // }
 
         // // not working but just_fly_plus_highweight_target
         // if ((Time.realtimeSinceStartup - episode_start_time) > 10f){
@@ -273,6 +267,13 @@ public class JetMovementAgent : Agent
         fighterjetRB.velocity = new Vector3(0, 0, 0);
         transform.position = initPos;
         transform.rotation = initRot;
+        
+
+        float newX = Random.Range(-80.0f, 80.0f) + initGoalPosition.x;
+        float newY = Mathf.Clamp(Random.Range(-80.0f, 80.0f) + initGoalPosition.y, 40f, float.MaxValue);
+        float newZ = Random.Range(-80.0f, 80.0f) + initGoalPosition.z;
+
+        GameObject.Find("Goal").transform.position = new Vector3(newX, newY, newZ);
 
         // bool isInference = GetComponent<BehaviorParameters>().BehaviorType == BehaviorType.InferenceOnly;
         // if (isInference) {
