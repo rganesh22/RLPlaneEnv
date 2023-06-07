@@ -33,8 +33,6 @@ public class JetMovementAgent : Agent
         initPos = gameObject.transform.position;
         initRot = gameObject.transform.rotation;
 
-        Time.timeScale = 5f;
-
         SetResetParameters();
 
         Time.timeScale = 100f;
@@ -101,8 +99,13 @@ public class JetMovementAgent : Agent
             // speed + not hitting ground
             float reward = 0;
             reward -= 0.0001f * distToGoal;
-            reward += 0.0001f;
-            SetReward(reward);
+            // reward += 0.00001f;
+            if ((GetCumulativeReward() + reward) < -1f) {
+                SetReward(-1f);
+                EndEpisode();
+            } else {
+                SetReward(reward);
+            }
         }
         
         // [(CL STEP 1) JUST FLY!]
@@ -132,9 +135,9 @@ public class JetMovementAgent : Agent
         transform.rotation = initRot;
         
         // [(CL STEP 3) HIT RANDOM TARGET!]
-        float newX = Random.Range(-80.0f, 80.0f) + initGoalPosition.x;
-        float newY = Mathf.Clamp(Random.Range(-80.0f, 80.0f) + initGoalPosition.y, 40f, float.MaxValue);
-        float newZ = Random.Range(-80.0f, 80.0f) + initGoalPosition.z;
+        float newX = Random.Range(-30.0f, 30.0f) + initGoalPosition.x;
+        float newY = Mathf.Clamp(Random.Range(-30.0f, 30.0f) + initGoalPosition.y, 40f, float.MaxValue);
+        float newZ = Random.Range(-30.0f, 30.0f) + initGoalPosition.z;
         goalPosition = new Vector3(newX, newY, newZ);
         GameObject.Find("Goal").transform.position = goalPosition;
     }
