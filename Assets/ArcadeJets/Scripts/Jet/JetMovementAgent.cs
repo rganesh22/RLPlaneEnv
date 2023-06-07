@@ -99,16 +99,17 @@ public class JetMovementAgent : Agent
             // speed + not hitting ground
             float reward = 0;
             reward -= 0.0001f * distToGoal;
-            // reward += 0.00001f;
+            reward += 0.00001f;
             if ((GetCumulativeReward() + reward) < -1f || reward < -1f) {
                 SetReward(-1f);
                 EndEpisode();
             } else {
-                // SetReward(reward);
+                // AddReward(reward);
+                SetReward(reward);
             }
         }
         
-        // [(CL STEP 1) JUST FLY!]
+        // // [(CL STEP 1) JUST FLY!]
         // if (transform.position.y < 10){
         //     Debug.Log("Hit the Ground :(");
         //     SetReward(-1f);

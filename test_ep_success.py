@@ -41,7 +41,7 @@ for episode in range(num_total):
 
     # print("Total reward this episode: {}".format(episode_rewards))
 
-ep_success = num_success / num_total
+ep_success = num_success/num_total
 print('model_name', model_name)
 print('ep_success', ep_success)
 
