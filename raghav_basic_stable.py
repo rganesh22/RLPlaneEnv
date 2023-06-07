@@ -4,7 +4,7 @@ from gym_unity.envs import UnityToGymWrapper
 import numpy as np
 # from stable_baselines3.common.policies import MlpPolicy
 from stable_baselines3.common.vec_env import DummyVecEnv
-from stable_baselines3 import PPO
+from stable_baselines3 import PPO, DDPG
 from stable_baselines3.common.monitor import Monitor
 import os
 import time
@@ -23,18 +23,19 @@ if __name__ == "__main__":
     time_int = int(time.time())
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
-    reward_func = "1_reward_scale_fly_target_jumpstart"
-    # log_dir = f"stable_results/ppo/{reward_func}/{time_int}"
-    log_dir = f"stable_results/ppo/raghavruns/{reward_func}/"
+    reward_func = "ddpg"
+    log_dir = f"stable_results/ppo/raghavruns/{reward_func}/{time_int}"
+    # log_dir = f"stable_results/ddpg/raghavruns/{reward_func}/"
     os.makedirs(log_dir, exist_ok=True)
     env = Monitor(env, log_dir, allow_early_resets=True)
 
     env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
 
-    model = PPO.load('1_reward_just_fly')
-    model.set_env(env)
+    # model = PPO.load('../RLHelicopter/a_first_step_ppo')
+    # model.set_env(env)
+    model = DDPG("MlpPolicy", env, batch_size=512, verbose=1, tensorboard_log=log_dir)    
     
-    # model = PPO("MlpPolicy", env, n_steps=2048, verbose=1, tensorboard_log=log_dir)
+    # model = PPO("MlpPolicy", env, n_steps=2048, batch_size=512, verbose=1, tensorboard_log=log_dir)    
     # model = PPO("MlpPolicy", env, n_steps=2048, learning_rate=1e-2, gamma=0.95, clip_range=0.5, verbose=1, tensorboard_log=log_dir)
 
     # model = PPO("MlpPolicy", env, n_steps=500, verbose=1, tensorboard_log=log_dir)    
@@ -60,7 +61,8 @@ if __name__ == "__main__":
     
     # model.learn(total_timesteps=100000)
     # model.learn(total_timesteps=200000)
-    model.learn(total_timesteps=70000)
+    model.learn(total_timesteps=80000)
+    # model.learn(total_timesteps=500000)
     
     model.save(log_dir+"/model")
     model.save("latest_model")

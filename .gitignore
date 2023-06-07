@@ -23,6 +23,8 @@ ExportedObj/
 *.booproj
 *.svd
 *.pdb
+*.mov
+stable_results/ppo/anwesharuns/just_fly_plus_highweight_target/*/*.zip
 
 # Unity3D generated meta files
 *.pidb.meta
