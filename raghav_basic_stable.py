@@ -23,7 +23,7 @@ if __name__ == "__main__":
     time_int = int(time.time())
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
-    reward_func = "jump_start_from_stage_1_to_2"
+    reward_func = "ddpg"
     log_dir = f"stable_results/ppo/raghavruns/{reward_func}/{time_int}"
     # log_dir = f"stable_results/ddpg/raghavruns/{reward_func}/"
     os.makedirs(log_dir, exist_ok=True)
@@ -31,9 +31,9 @@ if __name__ == "__main__":
 
     env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
 
-    model = PPO.load('../RLHelicopter/a_first_step_ppo')
-    model.set_env(env)
-    # model = DDPG("MlpPolicy", env, batch_size=512, verbose=1, tensorboard_log=log_dir)    
+    # model = PPO.load('../RLHelicopter/a_first_step_ppo')
+    # model.set_env(env)
+    model = DDPG("MlpPolicy", env, batch_size=512, verbose=1, tensorboard_log=log_dir)    
     
     # model = PPO("MlpPolicy", env, n_steps=2048, batch_size=512, verbose=1, tensorboard_log=log_dir)    
     # model = PPO("MlpPolicy", env, n_steps=2048, learning_rate=1e-2, gamma=0.95, clip_range=0.5, verbose=1, tensorboard_log=log_dir)
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     
     # model.learn(total_timesteps=100000)
     # model.learn(total_timesteps=200000)
-    model.learn(total_timesteps=140000)
+    model.learn(total_timesteps=80000)
     # model.learn(total_timesteps=500000)
     
     model.save(log_dir+"/model")

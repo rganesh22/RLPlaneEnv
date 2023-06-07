@@ -104,7 +104,7 @@ public class JetMovementAgent : Agent
                 SetReward(-1f);
                 EndEpisode();
             } else {
-                SetReward(reward);
+                // SetReward(reward);
             }
         }
         
@@ -135,12 +135,12 @@ public class JetMovementAgent : Agent
         transform.rotation = initRot;
         
         // [(CL STEP 3) HIT RANDOM TARGET!]
-        // float offset = 40.0f;
-        // float newX = Random.Range(-offset, offset) + initGoalPosition.x;
-        // float newY = Mathf.Clamp(Random.Range(-offset, offset) + initGoalPosition.y, 40f, float.MaxValue);
-        // float newZ = Random.Range(-offset, offset) + initGoalPosition.z;
-        // goalPosition = new Vector3(newX, newY, newZ);
-        // GameObject.Find("Goal").transform.position = goalPosition;
+        float offset = 40.0f;
+        float newX = Random.Range(-offset, offset) + initGoalPosition.x;
+        float newY = Mathf.Clamp(Random.Range(-offset, offset) + initGoalPosition.y, 40f, float.MaxValue);
+        float newZ = Random.Range(-offset, offset) + initGoalPosition.z;
+        goalPosition = new Vector3(newX, newY, newZ);
+        GameObject.Find("Goal").transform.position = goalPosition;
     }
 }
 
