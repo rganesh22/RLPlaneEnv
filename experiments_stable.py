@@ -20,26 +20,26 @@ if __name__ == "__main__":
     # time_int = int(time.time())
     # Change logdir if you want to make it "no grounding etc." for the kind of reward function we're testing
     # [no_grounding, [point2_target_distance_square, point5_target_distance_linear, etc etc]
-    reward_func = "no_grounding_speed_distance"
+    reward_func = "new_obs_fly_target_time_dist"
     # log_dir = f"stable_results/ddpg/{reward_func}/{time_int}"
-    for lr in [5e-3, 1e-2, 5e-2]:
+    for lr in [1e-4, 1e-3, 1e-2, 5e-2, 5e-3]:
         if lr == 5e-3: lr_str = "5e-3" 
         elif lr == 5e-2: lr_str = "5e-2" 
         else: lr_str = "1e-2"
-        for gamma in [0.99, 0.95]:
+        for gamma in [0.99]:
             gamma_str = f"point{int(gamma * 100)}"
-            for batch_size in [64, 32]:
+            for batch_size in [512, 1024]:
                 unity_env = UnityEnvironment("Build/ArcadeJetFlight", no_graphics=True, worker_id=2)
                 # unity_env = UnityEnvironment("Build/ArcadeJetFlightExample", worker_id=2)
                 env = UnityToGymWrapper(unity_env, uint8_visual=False) 
-                log_dir = f"stable_results/ppo/anwesharuns/{reward_func}/lr{lr_str}_gamma{gamma_str}_batch{batch_size}/"
+                log_dir = f"stable_results/ppo/small_reward/{reward_func}/lr{lr_str}_gamma{gamma_str}_batch{batch_size}/"
                 video_folder = f"{log_dir}/videos/"
                 os.makedirs(log_dir, exist_ok=True)
                 os.makedirs(video_folder, exist_ok=True)
                 env = Monitor(env, log_dir, allow_early_resets=True)
                 env = DummyVecEnv([lambda: env])  # The algorithms require a vectorized environment to run
-                model = PPO("MlpPolicy", env, n_steps=512, learning_rate=lr, gamma=gamma, batch_size=batch_size, verbose=1, tensorboard_log=log_dir)
-                model.learn(total_timesteps=50000)
+                model = PPO("MlpPolicy", env, n_steps=2048, learning_rate=lr, gamma=gamma, batch_size=batch_size, verbose=1, tensorboard_log=log_dir)
+                model.learn(total_timesteps=100000)
                 model.save(log_dir+"/model")
                 # make a gif
                 # images = []
@@ -53,12 +53,12 @@ if __name__ == "__main__":
 
                 # imageio.mimsave(video_folder+'sample.gif', [np.array(img) for i, img in enumerate(images) if i%2 == 0], duration=5)
                 env.close()
-                time.sleep(60) # give ports time to clear up
+                # time.sleep(60) # give ports time to clear up
 
                 # make it record videos
-                eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlight", no_graphics=False)
+                eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlight", no_graphics=False, worker_id=3)
                 eval_env = UnityToGymWrapper(eval_unity_env, uint8_visual=False) 
-                episodes = 100
+                episodes = 50
                 ep_r = []
                 ep_l = []
                 longfile = Path(f"{log_dir}/longlogs.txt")
@@ -90,13 +90,13 @@ if __name__ == "__main__":
                     ep_l.append(total_l)
                     with open(logfile, 'a') as file2:
                         file2.write(f"Episode: {e}, Total Reward: {total_r}, Total Length: {total_l} \n")
-                # print("episode mean reward: {:0.3f} mean length: {:0.3f}".format(np.mean(ep_r), np.mean(ep_l)))
+                print("episode mean reward: {:0.3f} mean length: {:0.3f}".format(np.mean(ep_r), np.mean(ep_l)))
                 with open('{}_eval.pkl'.format(log_dir), 'wb') as f:
                     pickle.dump(ep_r, f)
                     pickle.dump(ep_l, f)
                 
                 eval_env.close()
-                time.sleep(60)
+                time.sleep(5)
 
     # model = PPO.load('just_fly')
     # model.set_env(env)
