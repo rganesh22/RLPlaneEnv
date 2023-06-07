@@ -100,7 +100,7 @@ public class JetMovementAgent : Agent
             float reward = 0;
             reward -= 0.0001f * distToGoal;
             // reward += 0.00001f;
-            if ((GetCumulativeReward() + reward) < -1f) {
+            if ((GetCumulativeReward() + reward) < -1f || reward < -1f) {
                 SetReward(-1f);
                 EndEpisode();
             } else {
@@ -135,10 +135,13 @@ public class JetMovementAgent : Agent
         transform.rotation = initRot;
         
         // [(CL STEP 3) HIT RANDOM TARGET!]
-        float newX = Random.Range(-30.0f, 30.0f) + initGoalPosition.x;
-        float newY = Mathf.Clamp(Random.Range(-30.0f, 30.0f) + initGoalPosition.y, 40f, float.MaxValue);
-        float newZ = Random.Range(-30.0f, 30.0f) + initGoalPosition.z;
+        float offset = 40.0f;
+        float newX = Random.Range(-offset, offset) + initGoalPosition.x;
+        float newY = Mathf.Clamp(Random.Range(-offset, offset) + initGoalPosition.y, 40f, float.MaxValue);
+        float newZ = Random.Range(-offset, offset) + initGoalPosition.z;
         goalPosition = new Vector3(newX, newY, newZ);
         GameObject.Find("Goal").transform.position = goalPosition;
     }
 }
+
+//PPO_6
