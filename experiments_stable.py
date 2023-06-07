@@ -41,17 +41,6 @@ if __name__ == "__main__":
                 model = PPO("MlpPolicy", env, n_steps=512, learning_rate=lr, gamma=gamma, batch_size=batch_size, verbose=1, tensorboard_log=log_dir)
                 model.learn(total_timesteps=50000)
                 model.save(log_dir+"/model")
-                # make a gif
-                # images = []
-                # obs = model.env.reset()
-                # img = model.env.render(mode='rgb_array')
-                # for i in range(150):
-                #     images.append(img)
-                #     action, _ = model.predict(obs)
-                #     obs, _, _ ,_ = model.env.step(action)
-                #     img = model.env.render(mode='rgb_array')
-
-                # imageio.mimsave(video_folder+'sample.gif', [np.array(img) for i, img in enumerate(images) if i%2 == 0], duration=5)
                 env.close()
                 time.sleep(60) # give ports time to clear up
 
@@ -59,6 +48,7 @@ if __name__ == "__main__":
                 eval_unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlight", no_graphics=False)
                 eval_env = UnityToGymWrapper(eval_unity_env, uint8_visual=False) 
                 episodes = 100
+                success_counter = 0
                 ep_r = []
                 ep_l = []
                 longfile = Path(f"{log_dir}/longlogs.txt")
@@ -68,12 +58,6 @@ if __name__ == "__main__":
                 print(logfile)
                 print(longfile)
                 for e in range(episodes):
-                    # if e == 99:    
-                    #     eval_env = DummyVecEnv([lambda: eval_env])
-                    #     eval_env = VecVideoRecorder(eval_env, video_folder, 
-                    #                             record_video_trigger=lambda x: x ==0, 
-                    #                             video_length=200, 
-                    #                             name_prefix=f"sample_video")
                     obs = eval_env.reset()
                     total_r = 0.
                     total_l = 0.
@@ -81,7 +65,13 @@ if __name__ == "__main__":
                         action, _states = model.predict(obs)
                         obs, reward, done, info = eval_env.step(action)
                         total_l += 1.
-                        total_r += reward
+                        if reward == -1:
+                            total_r = -1
+                        elif reward == 1:
+                            total_r = 1
+                            success_counter += 1
+                        else:
+                            total_r += reward
                         if done:
                             break
                         with open(longfile, 'a') as file1:
@@ -90,7 +80,9 @@ if __name__ == "__main__":
                     ep_l.append(total_l)
                     with open(logfile, 'a') as file2:
                         file2.write(f"Episode: {e}, Total Reward: {total_r}, Total Length: {total_l} \n")
-                # print("episode mean reward: {:0.3f} mean length: {:0.3f}".format(np.mean(ep_r), np.mean(ep_l)))
+                        if e == episodes - 1:
+                            file2.write("Final Episode Success Rate: {:0.3f}".format(success_counter/episodes))
+                print("Episode Mean Reward: {:0.3f}, Mean Length: {:0.3f}, Success Rate: {:0.3f}".format(np.mean(ep_r), np.mean(ep_l), (success_counter/episodes)))
                 with open('{}_eval.pkl'.format(log_dir), 'wb') as f:
                     pickle.dump(ep_r, f)
                     pickle.dump(ep_l, f)
