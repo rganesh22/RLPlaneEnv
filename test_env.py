@@ -21,7 +21,7 @@ model = PPO.load('latest_model')
 unity_env = UnityEnvironment("Eval_Build/ArcadeJetFlightExample")
 env = UnityToGymWrapper(unity_env, uint8_visual=False) 
 
-for episode in range(10):
+for episode in range(100):
     initial_observation = env.reset()
     done = False
     episode_rewards = 0
